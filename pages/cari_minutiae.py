@@ -5,6 +5,7 @@ from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk 
 from datetime import datetime
 import calendar
+import db_manager
 from db_manager import get_db_connection, run_minutiae_extraction 
 class CTkDatePicker(ctk.CTkFrame):
     def __init__(self, master, width=180, **kwargs):
@@ -32,7 +33,7 @@ class CTkDatePicker(ctk.CTkFrame):
             command=self.open_calendar
         )
         self.btn.pack(side="left")
-        
+
     def reset_state(self):
         """Bersihkan semua state pencarian saat user logout / mulai baru."""
         self.filepath = None
@@ -580,12 +581,13 @@ class CariMinutiaePage(ctk.CTkFrame):
 
                     user_id = self.controller.logged_in_user_id if hasattr(self.controller, 'logged_in_user_id') else 1 
 
+                    minutiae_count = db_manager.get_minutiae_count()
                     conn = get_db_connection()
                     cursor = conn.cursor()
                     cursor.execute('''
-                        INSERT INTO history (judul_kasus, nomor_lp, tanggal_kejadian, path_mentah, path_ekstraksi, user_id)
-                        VALUES (?, ?, ?, ?, ?, ?)
-                    ''', (judul, nomor_lp, tanggal, path_mentah, path_ekstraksi, user_id)) 
+                        INSERT INTO history (judul_kasus, nomor_lp, tanggal_kejadian, path_mentah, path_ekstraksi, user_id, minutiae_count)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    ''', (judul, nomor_lp, tanggal, path_mentah, path_ekstraksi, user_id, minutiae_count)) 
 
                     last_id = cursor.lastrowid
                     conn.commit()
@@ -600,6 +602,7 @@ class CariMinutiaePage(ctk.CTkFrame):
                         "tanggal": tanggal,
                         "path_mentah": path_mentah,
                         "path_ekstraksi": path_ekstraksi,
+                        "minutiae_count": minutiae_count,
                     }
 
                 elif not error:

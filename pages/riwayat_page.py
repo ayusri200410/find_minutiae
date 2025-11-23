@@ -35,7 +35,8 @@ class RiwayatPencarianPage(ctk.CTkFrame):
             "lp": 140,
             "tanggal": 140,
             "tipe": 120,
-            "aksi": 90
+            "aksi": 90,
+            "minutiae_count": 120,
         }
 
         self.grid_columnconfigure(0, weight=1)
@@ -166,13 +167,15 @@ class RiwayatPencarianPage(ctk.CTkFrame):
 
         for i, row in enumerate(page_data):
             try:
-                row_id, judul, nomor_lp, tanggal, timestamp, username = row
+                row_id, judul, nomor_lp, tanggal, timestamp, minutiae_count, username = row
             except Exception:
                 row_id = row[0] if len(row) > 0 else ""
                 judul = row[1] if len(row) > 1 else ""
                 nomor_lp = row[2] if len(row) > 2 else ""
                 tanggal = row[3] if len(row) > 3 else ""
-                username = row[5] if len(row) > 5 else ""
+                minutiae_count = row[5] if len(row) > 4 else ""
+                username = row[6] if len(row) > 5 else ""
+                
 
             bg_color = "gray18" if (i % 2 == 0) else "gray17"
             row_frame = ctk.CTkFrame(self.rows_container, fg_color=bg_color, height=42, corner_radius=4)
@@ -217,6 +220,10 @@ class RiwayatPencarianPage(ctk.CTkFrame):
             lbl_tipe = ctk.CTkLabel(row_frame, text=cut_text(username or "-", 18), font=self.controller.FONT_UTAMA)
             lbl_tipe.grid(row=0, column=4, sticky="w", padx=4)
             lbl_tipe.configure(width=self.COL_WIDTH["tipe"])
+            
+            lbl_minutiae_count = ctk.CTkLabel(row_frame, text=cut_text(username or "-", 18), font=self.controller.FONT_UTAMA)
+            lbl_minutiae_count.grid(row=0, column=4, sticky="w", padx=4)
+            lbl_minutiae_count.configure(width=self.COL_WIDTH["minutiae_count"])
 
             action_frame = ctk.CTkFrame(row_frame, fg_color="transparent")
             action_frame.grid(row=0, column=5, sticky="w", padx=(4, 8))
@@ -359,6 +366,12 @@ class DetailPage(ctk.CTkFrame):
         self.lbl_tanggal = ctk.CTkLabel(info_panel, text="", font=self.controller.FONT_UTAMA, anchor="w")
         self.lbl_tanggal.pack(fill="x", pady=(0, 20))
 
+        ctk.CTkLabel(info_panel, text="Minutiae Ditemukan:", font=self.controller.FONT_UTAMA, anchor="w").pack(
+            fill="x", pady=(5, 0)
+        )
+        self.lbl_minutiae_count = ctk.CTkLabel(info_panel, text="", font=self.controller.FONT_UTAMA, anchor="w")
+        self.lbl_minutiae_count.pack(fill="x", pady=(0, 20))
+
         ctk.CTkLabel(info_panel, text="Path File Mentah:", font=self.controller.FONT_UTAMA, anchor="w").pack(
             fill="x", pady=(5, 0)
         )
@@ -442,6 +455,7 @@ class DetailPage(ctk.CTkFrame):
             self.lbl_judul.configure(text=record['judul_kasus'])
             self.lbl_lp.configure(text=record['nomor_lp'] if record['nomor_lp'] else "-")
             self.lbl_tanggal.configure(text=record['tanggal_kejadian'] if record['tanggal_kejadian'] else "-")
+            self.lbl_minutiae_count.configure(text=str(record['minutiae_count'] if record['minutiae_count'] is not None else "-"))
             self.lbl_path_mentah.configure(text=record['path_mentah'])
             self.lbl_path_ekstraksi.configure(text=record['path_ekstraksi'])
 

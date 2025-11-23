@@ -134,6 +134,7 @@ if draw_minutiae_func is None:
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)) 
 DB_NAME = 'minutiae_app.db'
 DB_PATH = os.path.join(BASE_DIR, DB_NAME)
+MINUTIAE_COUNT = 0
 
 # Folder untuk menyimpan gambar mentah dan hasil ekstraksi
 DATA_DIR = os.path.join(os.path.dirname(BASE_DIR), 'data_kasus')
@@ -235,6 +236,7 @@ def init_db():
             path_ekstraksi TEXT NOT NULL,
             user_id INTEGER,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            minutiae_count INTEGER,
             FOREIGN KEY (user_id) REFERENCES users(id)
         )
     ''')
@@ -392,6 +394,9 @@ def run_minutiae_extraction(input_filepath, case_judul, progress_callback=None):
             if minutiae_df is not None and not minutiae_df.empty
             else 0
         )
+
+        global MINUTIAE_COUNT 
+        MINUTIAE_COUNT = num_minutiae  # Simpan ke atribut untuk referensi luar
         print(f"DEBUG: Jumlah minutiae yang terdeteksi: {num_minutiae}")
 
         # 3. Visualisasi Hasil Ekstraksi
@@ -462,7 +467,7 @@ def get_history_data(user_id=None):
     sql_query = '''
         SELECT 
             h.id, h.judul_kasus, h.nomor_lp, h.tanggal_kejadian, 
-            h.timestamp, u.username
+            h.timestamp,h.minutiae_count, u.username
         FROM history h
         JOIN users u ON h.user_id = u.id
     '''
@@ -484,15 +489,15 @@ def get_history_data(user_id=None):
     finally:
         conn.close()
 
-def save_history(judul_kasus, nomor_lp, tanggal_kejadian, path_mentah, path_ekstraksi, user_id):
+def save_history(judul_kasus, nomor_lp, tanggal_kejadian, path_mentah, path_ekstraksi, user_id, minutiae_count=None):
     """Menyimpan riwayat ke database dan mengembalikan ID baris yang baru dibuat."""
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
         cursor.execute('''
-            INSERT INTO history (judul_kasus, nomor_lp, tanggal_kejadian, path_mentah, path_ekstraksi, user_id)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (judul_kasus, nomor_lp, tanggal_kejadian, path_mentah, path_ekstraksi, user_id))
+            INSERT INTO history (judul_kasus, nomor_lp, tanggal_kejadian, path_mentah, path_ekstraksi, user_id, minutiae_count)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (judul_kasus, nomor_lp, tanggal_kejadian, path_mentah, path_ekstraksi, user_id, minutiae_count))
         
         last_id = cursor.lastrowid
         conn.commit()
@@ -511,7 +516,7 @@ def fetch_history_by_id(history_id):
     cursor.execute('''
         SELECT 
             h.id, h.judul_kasus, h.nomor_lp, h.tanggal_kejadian, 
-            h.path_mentah, h.path_ekstraksi, h.timestamp, u.username
+            h.path_mentah, h.path_ekstraksi, h.timestamp, h.minutiae_count, u.username
         FROM history h
         JOIN users u ON h.user_id = u.id
         WHERE h.id = ?
@@ -685,4 +690,8 @@ def delete_user_and_history(user_id):
         print('[db_manager] delete_user_and_history error:', e)
         return False
 # -------------------------------------------------------
+def get_minutiae_count():
+    """Mengembalikan jumlah minutiae dari ekstraksi terakhir."""
+    global MINUTIAE_COUNT
+    return MINUTIAE_COUNT
 
