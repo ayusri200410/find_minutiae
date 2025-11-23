@@ -267,6 +267,8 @@ class DetailPage(ctk.CTkFrame):
         self._fs_box_w = None
         self._fs_box_h = None
         self._fs_zoom_var = None
+        self._fs_left_toggle_var = None
+        self._fs_right_toggle_var = None
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
@@ -495,7 +497,7 @@ class DetailPage(ctk.CTkFrame):
     def _make_ctk_image_boxed(self, pil_img, box_w, box_h, zoom_factor=1.0):
         """
         Resize proporsional lalu tempel ke kanvas hitam box_w x box_h.
-        zoom_factor > 1.0 = zoom in (crop di tepi), < 1.0 = zoom out.
+        zoom_factor > 1.0 = zoom in, < 1.0 = zoom out.
         """
         img = pil_img.convert("RGB")
         ow, oh = img.size
@@ -556,13 +558,31 @@ class DetailPage(ctk.CTkFrame):
         left_container.grid_rowconfigure(1, weight=1)
         left_container.grid_columnconfigure(0, weight=1)
 
+        left_title_frame = ctk.CTkFrame(left_container, fg_color="black")
+        left_title_frame.grid(row=0, column=0, pady=(0, 10), sticky="w")
+        left_title_frame.grid_columnconfigure(0, weight=0)
+        left_title_frame.grid_columnconfigure(1, weight=0)
+
         self.fs_raw_title = ctk.CTkLabel(
-            left_container,
+            left_title_frame,
             text="Sidik Jari Mentah",
             font=self.controller.FONT_UTAMA,
             text_color="white"
         )
-        self.fs_raw_title.grid(row=0, column=0, pady=(0, 10))
+        self.fs_raw_title.grid(row=0, column=0, padx=(0, 6))
+
+        self._fs_left_toggle_var = ctk.BooleanVar(value=False)
+        self.fs_left_checkbox = ctk.CTkCheckBox(
+            left_title_frame,
+            text="",
+            variable=self._fs_left_toggle_var,
+            command=self._on_fs_toggle,
+            fg_color="#1f6aa5",
+            border_color="white",
+            checkbox_width=16,
+            checkbox_height=16
+        )
+        self.fs_left_checkbox.grid(row=0, column=1)
 
         self.fs_raw_image_label = ctk.CTkLabel(left_container, text="")
         self.fs_raw_image_label.grid(row=1, column=0, sticky="nsew")
@@ -573,13 +593,31 @@ class DetailPage(ctk.CTkFrame):
         right_container.grid_rowconfigure(1, weight=1)
         right_container.grid_columnconfigure(0, weight=1)
 
+        right_title_frame = ctk.CTkFrame(right_container, fg_color="black")
+        right_title_frame.grid(row=0, column=0, pady=(0, 10), sticky="w")
+        right_title_frame.grid_columnconfigure(0, weight=0)
+        right_title_frame.grid_columnconfigure(1, weight=0)
+
         self.fs_ext_title = ctk.CTkLabel(
-            right_container,
+            right_title_frame,
             text="Sidik Jari Hasil Ekstraksi",
             font=self.controller.FONT_UTAMA,
             text_color="white"
         )
-        self.fs_ext_title.grid(row=0, column=0, pady=(0, 10))
+        self.fs_ext_title.grid(row=0, column=0, padx=(0, 6))
+
+        self._fs_right_toggle_var = ctk.BooleanVar(value=False)
+        self.fs_right_checkbox = ctk.CTkCheckBox(
+            right_title_frame,
+            text="",
+            variable=self._fs_right_toggle_var,
+            command=self._on_fs_toggle,
+            fg_color="#1f6aa5",
+            border_color="white",
+            checkbox_width=16,
+            checkbox_height=16
+        )
+        self.fs_right_checkbox.grid(row=0, column=1)
 
         self.fs_ext_image_label = ctk.CTkLabel(right_container, text="")
         self.fs_ext_image_label.grid(row=1, column=0, sticky="nsew")
@@ -622,6 +660,10 @@ class DetailPage(ctk.CTkFrame):
             self.zoom_label.configure(text=f"{int(value)}%")
         self._update_fullscreen_images()
 
+    def _on_fs_toggle(self):
+        # Checkbox kiri/kanan berubah → update gambar
+        self._update_fullscreen_images()
+
     def show_fullscreen_comparison(self):
         path_mentah = self.record_paths.get("Mentah")
         path_ekstraksi = self.record_paths.get("Ekstraksi")
@@ -642,7 +684,7 @@ class DetailPage(ctk.CTkFrame):
             w, h = 1200, 700  # fallback
 
         max_w_each = (w - 60) // 2
-        max_h = h - 130   # beri ruang header + slider
+        max_h = h - 130   # ruang header + slider
 
         self._fs_box_w = int(max_w_each * 0.95)
         self._fs_box_h = int(max_h * 0.95)
@@ -654,11 +696,15 @@ class DetailPage(ctk.CTkFrame):
             messagebox.showerror("Error", f"Gagal membuka gambar:\n{e}")
             return
 
-        # reset zoom ke 100% tiap buka
+        # reset zoom & checkbox setiap kali buka
         if self._fs_zoom_var is not None:
             self._fs_zoom_var.set(100.0)
             if self.zoom_label is not None:
                 self.zoom_label.configure(text="100%")
+        if self._fs_left_toggle_var is not None:
+            self._fs_left_toggle_var.set(False)
+        if self._fs_right_toggle_var is not None:
+            self._fs_right_toggle_var.set(False)
 
         self._update_fullscreen_images()
 
@@ -680,11 +726,18 @@ class DetailPage(ctk.CTkFrame):
         if self._fs_zoom_var is not None:
             zoom_factor = max(self._fs_zoom_var.get() / 100.0, 0.1)
 
+        # Tentukan gambar kiri & kanan berdasarkan checkbox
+        left_use_ext = self._fs_left_toggle_var.get() if self._fs_left_toggle_var is not None else False
+        right_use_raw = self._fs_right_toggle_var.get() if self._fs_right_toggle_var is not None else False
+
+        left_pil = self._fs_ext_pil if left_use_ext else self._fs_raw_pil
+        right_pil = self._fs_raw_pil if right_use_raw else self._fs_ext_pil
+
         self._fs_raw_ctk_image = self._make_ctk_image_boxed(
-            self._fs_raw_pil, self._fs_box_w, self._fs_box_h, zoom_factor=zoom_factor
+            left_pil, self._fs_box_w, self._fs_box_h, zoom_factor=zoom_factor
         )
         self._fs_ext_ctk_image = self._make_ctk_image_boxed(
-            self._fs_ext_pil, self._fs_box_w, self._fs_box_h, zoom_factor=zoom_factor
+            right_pil, self._fs_box_w, self._fs_box_h, zoom_factor=zoom_factor
         )
 
         if self._fs_raw_ctk_image is not None:
