@@ -4,7 +4,7 @@ from PIL import Image
 
 class Sidebar(ctk.CTkFrame):
     def __init__(self, parent, controller):
-        super().__init__(parent, width=180, corner_radius=0, fg_color="gray18")
+        super().__init__(parent, width=180, corner_radius=0, fg_color=controller.BACKGROUND_COLOR, border_width=1, border_color=controller.BORDER_COLOR)
         self.controller = controller
 
         # --- Load all icons one time ---
@@ -19,7 +19,7 @@ class Sidebar(ctk.CTkFrame):
        # ============================
         #       LOAD LOGO
         # ============================
-        logo_path = os.path.join("assets", "logo-white-blue.png")
+        logo_path = os.path.join("assets", "logo-gray-blue.png")
         self.logo_image = None
         if os.path.exists(logo_path):
             try:
@@ -54,12 +54,12 @@ class Sidebar(ctk.CTkFrame):
             ).grid(row=0, column=0, padx=10, pady=(20, 10), sticky="ew")
 
         # divider line
-        ctk.CTkFrame(self, height=2, fg_color="gray30") \
-            .grid(row=1, column=0, sticky="ew", padx=10, pady=(0, 20))
+        ctk.CTkFrame(self, height=2, fg_color=controller.BORDER_COLOR) \
+            .grid(row=1, column=0, sticky="ew", padx=0, pady=(0, 20))
 
         # ----- MENU CONTAINER -----
         self.menu_container = ctk.CTkFrame(self, fg_color="transparent")
-        self.menu_container.grid(row=2, column=0, sticky="nsew", padx=0, pady=(0,0))
+        self.menu_container.grid(row=2, column=0, sticky="nsew", padx=1, pady=1)
         self.menu_container.grid_columnconfigure(0, weight=1)
 
         self.menus = {}
@@ -73,8 +73,8 @@ class Sidebar(ctk.CTkFrame):
             self,
             text="Logout",
             corner_radius=7,
-            fg_color="#b33030",
-            hover_color="#8b2626",
+            fg_color=self.controller.DANGER_COLOR,
+            hover_color=self.controller.DANGER_HOVER_COLOR,
             text_color="white",
             command=self._on_logout,
             font=controller.FONT_UTAMA,
@@ -120,14 +120,16 @@ class Sidebar(ctk.CTkFrame):
                 text=text,
                 corner_radius=7,
                 fg_color="transparent",
-                hover_color="gray25",
+                hover_color=self.controller.HOVER_SIDEBAR_COLOR,
                 command=cmd,
-                font=self.controller.FONT_UTAMA,
+                font=self.controller.FONT_BOLD,
                 anchor="w",
                 image=icon,
-                compound="left"
+                compound="left",
+                text_color=self.controller.SECONDARY_TEXT_COLOR
+                
             )
-            btn.grid(row=row_counter, column=0, sticky="ew", padx=10, pady=(6, 6))
+            btn.grid(row=row_counter, column=0, sticky="ew", padx=10, ipady=10, pady=(6, 6))
             self.menus[key] = btn
             row_counter += 1
 
@@ -150,14 +152,15 @@ class Sidebar(ctk.CTkFrame):
                 text="Manajemen User",
                 corner_radius=7,
                 fg_color="transparent",
-                hover_color="gray25",
+                hover_color=self.controller.HOVER_SIDEBAR_COLOR,
                 command=lambda: self.controller.show_frame("UserManagement"),
-                font=self.controller.FONT_UTAMA,
+                font=self.controller.FONT_BOLD,
                 anchor="w",
                 image=self.icons.get("manajemen"),
-                compound="left"
+                compound="left",
+                text_color=self.controller.SECONDARY_TEXT_COLOR
             )
-            btn.grid(row=current_rows, column=0, sticky="ew", padx=10, pady=(6, 6))
+            btn.grid(row=current_rows, column=0, sticky="ew", padx=10, ipadx=10, ipady=10, pady=(6, 6))
             self.menus[self.admin_menu_key] = btn
 
         if not show_admin and self.admin_menu_key in self.menus:
@@ -176,7 +179,7 @@ class Sidebar(ctk.CTkFrame):
             btn.configure(fg_color="transparent")
 
         if key in self.menus:
-            self.menus[key].configure(fg_color="#1f6aa5")
+            self.menus[key].configure(fg_color=self.controller.ACTIVE_SIDEBAR_COLOR)
 
     # -----------------------
     # LOGOUT

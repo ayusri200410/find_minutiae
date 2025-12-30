@@ -21,7 +21,7 @@ class CTkDatePicker(ctk.CTkFrame):
         self.entry = ctk.CTkEntry(
             container,
             width=self.width - 40,
-            placeholder_text="YYYY-MM-DD"
+            placeholder_text="YYYY-MM-DD",
         )
         self.entry.bind("<Key>", lambda e: "break")
         self.entry.pack(side="left", fill="x", padx=(0, 5))
@@ -40,7 +40,7 @@ class CTkDatePicker(ctk.CTkFrame):
 
         # status
         if hasattr(self, "label_status"):
-            self.label_status.configure(text="", text_color="white")
+            self.label_status.configure(text="", text_color=self.controller.TEXT_COLOR)
 
         # preview gambar mentah
         if hasattr(self, "label_mentah"):
@@ -267,7 +267,7 @@ class CariMinutiaePage(ctk.CTkFrame):
         self.loading_image_label = None
         self.loading_text_label = None
 
-        super().__init__(parent, fg_color="gray17")
+        super().__init__(parent, fg_color=controller.BACKGROUND_COLOR)
         self.controller = controller
         self.filepath = None # Menyimpan path gambar yang diupload
         
@@ -280,15 +280,15 @@ class CariMinutiaePage(ctk.CTkFrame):
         
     def _setup_main_content(self):
         # Frame Konten Utama (Kanan)
-        self.content_frame = ctk.CTkFrame(self, fg_color="gray17")
+        self.content_frame = ctk.CTkFrame(self, fg_color=self.controller.BACKGROUND_COLOR)
         self.content_frame.grid(row=0, column=1, sticky="nsew")
         self.content_frame.grid_columnconfigure(0, weight=1)
         self.content_frame.grid_rowconfigure(1, weight=1)
 
         # PERBAIKAN FONT 2/13
-        ctk.CTkLabel(self.content_frame, text="Cari Minutiae Sidik Jari", font=self.controller.FONT_JUDUL).grid(row=0, column=0, padx=20, pady=(20, 10), sticky="w")
+        ctk.CTkLabel(self.content_frame, text="Cari Minutiae Sidik Jari", font=self.controller.FONT_JUDUL, text_color=self.controller.TEXT_COLOR).grid(row=0, column=0, padx=20, pady=(20, 10), sticky="w")
         
-        self.form_card = ctk.CTkFrame(self.content_frame, fg_color="gray15", corner_radius=10)
+        self.form_card = ctk.CTkFrame(self.content_frame, fg_color=self.controller.CARD_COLOR, corner_radius=10, border_width=1, border_color=self.controller.BORDER_COLOR)
         self.form_card.grid(row=1, column=0, padx=20, pady=10, sticky="nsew")
         
         # Grid Form Card: Kolom 0 (Input) dan Kolom 1 (Gambar)
@@ -307,8 +307,8 @@ class CariMinutiaePage(ctk.CTkFrame):
         
         # Judul Kasus
         # PERBAIKAN FONT 3/13
-        ctk.CTkLabel(self.input_frame, text="Judul Kasus:", font=self.controller.FONT_UTAMA, anchor="w").grid(row=0, column=0, pady=(10, 0), sticky="ew")
-        self.entry_judul = ctk.CTkEntry(self.input_frame, placeholder_text="Contoh: Kasus Perampokan ATM 2023", font=self.controller.FONT_UTAMA)
+        ctk.CTkLabel(self.input_frame, text="Judul Kasus:", font=self.controller.FONT_UTAMA, anchor="w", text_color=self.controller.TEXT_COLOR).grid(row=0, column=0, pady=(10, 0), sticky="ew")
+        self.entry_judul = ctk.CTkEntry(self.input_frame, placeholder_text="Contoh: Kasus Perampokan ATM 2023", border_color=self.controller.BORDER_COLOR,  font=self.controller.FONT_UTAMA, fg_color=self.controller.CARD_COLOR, text_color=self.controller.SECONDARY_TEXT_COLOR)
         self.entry_judul.grid(row=1, column=0, pady=(5, 10), sticky="ew")
         
         # Nomor LP + Tanggal
@@ -319,59 +319,58 @@ class CariMinutiaePage(ctk.CTkFrame):
         lp_frame = ctk.CTkFrame(row2, fg_color="transparent")
         lp_frame.grid(row=0, column=0, sticky="ew", padx=(0, 10))
 
-        ctk.CTkLabel(lp_frame, text="Nomor LP:", font=self.controller.FONT_UTAMA, justify="left").pack(anchor="w",pady=(0, 0))
-        self.entry_lp = ctk.CTkEntry(lp_frame, placeholder_text="Contoh: LP/123/IX/2023")
+        ctk.CTkLabel(lp_frame, text="Nomor LP:", font=self.controller.FONT_UTAMA, justify="left", text_color=self.controller.TEXT_COLOR).pack(anchor="w",pady=(0, 0))
+        self.entry_lp = ctk.CTkEntry(lp_frame, placeholder_text="Contoh: LP/123/IX/2023", border_color=self.controller.BORDER_COLOR,  font=self.controller.FONT_UTAMA, fg_color=self.controller.CARD_COLOR, text_color=self.controller.SECONDARY_TEXT_COLOR    )
         self.entry_lp.pack(fill="x", pady=(5, 0))
         
         # ======== TANGGAL CUSTOM DATE PICKER ========
         tgl_frame = ctk.CTkFrame(row2, fg_color="transparent")
         tgl_frame.grid(row=0, column=1, sticky="ew")
 
-        ctk.CTkLabel(tgl_frame, text="Tanggal Kejadian:", font=self.controller.FONT_UTAMA, justify="left").pack(anchor="w",pady=(0, 0))
-
-        self.entry_tanggal = CTkDatePicker(tgl_frame, width=225)
+        ctk.CTkLabel(tgl_frame, text="Tanggal Kejadian:", font=self.controller.FONT_UTAMA, justify="left", text_color=self.controller.TEXT_COLOR).pack(anchor="w",pady=(0, 0))
+        self.entry_tanggal = CTkDatePicker(tgl_frame, width=225, )
         self.entry_tanggal.pack(fill="x", pady=(5, 0))
         # =============================================
 
         # Upload Sidik Jari
         # PERBAIKAN FONT 6/13
-        ctk.CTkLabel(self.input_frame, text="Upload Sidik Jari (SJ Mentah):", font=self.controller.FONT_UTAMA, anchor="w").grid(row=3, column=0, pady=(10, 0), sticky="ew")
+        ctk.CTkLabel(self.input_frame, text="Upload Sidik Jari (SJ Mentah):", font=self.controller.FONT_UTAMA, anchor="w", text_color=self.controller.TEXT_COLOR).grid(row=3, column=0, pady=(10, 0), sticky="ew")
         upload_frame = ctk.CTkFrame(self.input_frame, fg_color="transparent")
         upload_frame.grid(row=4, column=0, pady=(5, 20), sticky="ew")
         upload_frame.grid_columnconfigure(0, weight=1)
 
         # PERBAIKAN FONT 7/13
-        self.upload_label = ctk.CTkLabel(upload_frame, text="Belum ada file dipilih...", anchor="w", font=self.controller.FONT_UTAMA)
+        self.upload_label = ctk.CTkLabel(upload_frame, text="Belum ada file dipilih...", anchor="w", font=self.controller.FONT_UTAMA, text_color=self.controller.SECONDARY_TEXT_COLOR)
         self.upload_label.grid(row=0, column=0, sticky="ew", padx=(0, 10))
         
         # PERBAIKAN FONT 8/13
-        upload_button = ctk.CTkButton(upload_frame, text="Pilih File", command=self.upload_file, width=100, font=self.controller.FONT_UTAMA)
+        upload_button = ctk.CTkButton(upload_frame, text="Pilih File", command=self.upload_file, width=100, font=self.controller.FONT_UTAMA, fg_color=self.controller.BUTTON_COLOR, hover_color=self.controller.BUTTON_HOVER_COLOR)
         upload_button.grid(row=0, column=1, sticky="e")
         
-        # Tombol Lanjut
+        # Tombol Lanjut 
         # PERBAIKAN FONT 9/13
-        lanjut_button = ctk.CTkButton(self.input_frame, text="Ekstrak Minutiae", command=self.process_and_save, height=40, font=self.controller.FONT_SUBJUDUL, fg_color="#0d8427", hover_color="#18537a")
+        lanjut_button = ctk.CTkButton(self.input_frame, text="Ekstrak Minutiae", command=self.process_and_save, height=40, font=self.controller.FONT_SUBJUDUL, fg_color=self.controller.SUCCESS_COLOR, hover_color=self.controller.SUCCESS_HOVER_COLOR)
         lanjut_button.grid(row=5, column=0, pady=30, sticky="s")
 
 
     def _setup_form_display(self):
         # Frame Tampilan Gambar (Kolom Kanan dari Card)
-        self.display_frame = ctk.CTkFrame(self.form_card, fg_color="gray15")
+        self.display_frame = ctk.CTkFrame(self.form_card, fg_color=self.controller.CARD_COLOR)
         self.display_frame.grid(row=0, column=1, padx=30, pady=20, sticky="nsew")
         self.display_frame.grid_columnconfigure(0, weight=1)
         self.display_frame.grid_rowconfigure(4, weight=1)
 
         # Tampilan Gambar Mentah
         # PERBAIKAN FONT 10/13
-        ctk.CTkLabel(self.display_frame, text="Gambar Sidik Jari Mentah:", font=self.controller.FONT_UTAMA, anchor="w").grid(row=0, column=0, pady=(0, 5), sticky="w")
-        self.raw_image_holder = ctk.CTkLabel(self.display_frame, text="[Gambar Mentah]", corner_radius=10, fg_color="gray25", width=250, height=180)
+        ctk.CTkLabel(self.display_frame, text="Gambar Sidik Jari Mentah:", font=self.controller.FONT_UTAMA, anchor="w", text_color=self.controller.TEXT_COLOR).grid(row=0, column=0, pady=(0, 5), sticky="w")
+        self.raw_image_holder = ctk.CTkLabel(self.display_frame, text="[Gambar Mentah]", corner_radius=10, fg_color=self.controller.BACKGROUND_COLOR, width=250, height=180, text_color=self.controller.SECONDARY_TEXT_COLOR)
         self.raw_image_holder.grid(row=1, column=0, sticky="nwe", pady=(0, 20))
 
         # Tampilan Hasil Ekstraksi Minutiae
         # PERBAIKAN FONT 11/13
-        ctk.CTkLabel(self.display_frame, text="Hasil Ekstraksi Minutiae Sidik Jari:", font=self.controller.FONT_UTAMA, anchor="w").grid(row=2, column=0, pady=(0, 5), sticky="w")
-        self.extracted_image_holder = ctk.CTkLabel(self.display_frame, text="[Hasil Ekstraksi]", corner_radius=10, fg_color="gray25", width=250, height=180)
-        self.extracted_image_holder.grid(row=3, column=0, sticky="nwe")
+        ctk.CTkLabel(self.display_frame, text="Hasil Ekstraksi Minutiae Sidik Jari:", font=self.controller.FONT_UTAMA, anchor="w", text_color=self.controller.TEXT_COLOR).grid(row=2, column=0, pady=(0, 5), sticky="w")
+        self.extracted_image_holder = ctk.CTkLabel(self.display_frame, text="[Hasil Ekstraksi]", corner_radius=10, fg_color=self.controller.BACKGROUND_COLOR, width=250, height=180, text_color=self.controller.SECONDARY_TEXT_COLOR)
+        self.extracted_image_holder.grid(row=3, column=0, sticky="nwe", pady=(0, 10))
 
         # ================== LOADING OVERLAY ==================
 
@@ -384,7 +383,7 @@ class CariMinutiaePage(ctk.CTkFrame):
         parent = self.controller
 
         # Frame full-window hitam transparan
-        self.loading_overlay = ctk.CTkFrame(parent, fg_color="gray15")
+        self.loading_overlay = ctk.CTkFrame(parent, fg_color=self.controller.BACKGROUND_COLOR)
 
         # --- load GIF ---
         base_dir = os.path.dirname(os.path.dirname(__file__))  # root project
@@ -722,15 +721,15 @@ class CariMinutiaePage(ctk.CTkFrame):
 # =========================================================================
 class HasilEkstraksiPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
-        super().__init__(parent, fg_color="gray17")
+        super().__init__(parent, fg_color=self.controller.BACKGROUND_COLOR)
         self.controller = controller
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
         
         # PERBAIKAN FONT 12/13
         ctk.CTkLabel(self, text="Hasil Ekstraksi Minutiae", font=self.controller.FONT_JUDUL).grid(row=0, column=0, padx=20, pady=(20, 10), sticky="w")
-        
-        self.result_card = ctk.CTkFrame(self, fg_color="gray15", corner_radius=10)
+
+        self.result_card = ctk.CTkFrame(self, fg_color=self.controller.CARD_COLOR, corner_radius=10)
         self.result_card.grid(row=1, column=0, padx=20, pady=10, sticky="nsew")
         self.result_card.grid_columnconfigure(0, weight=1)
         self.result_card.grid_columnconfigure(1, weight=1)
@@ -769,7 +768,7 @@ class HasilEkstraksiPage(ctk.CTkFrame):
         ctk.CTkLabel(image_frame, text="Hasil Ekstraksi Minutiae:", font=self.controller.FONT_SUBJUDUL, text_color="#1f6aa5").grid(row=0, column=0, sticky="w", pady=(0, 10))
         
         # Image Holder
-        self.image_holder = ctk.CTkLabel(image_frame, text="[Gambar Hasil Ekstraksi]", corner_radius=10, fg_color="gray25")
+        self.image_holder = ctk.CTkLabel(image_frame, text="[Gambar Hasil Ekstraksi]", corner_radius=10, fg_color=self.controller.BACKGROUND_COLOR)
         self.image_holder.grid(row=1, column=0, sticky="nsew")
 
     def load_data(self, data):

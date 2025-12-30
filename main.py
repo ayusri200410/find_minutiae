@@ -14,7 +14,7 @@ from pages.user_management import UserManagementPage, UserDetailPage, UserEditPa
 
 
 # --- KONFIGURASI APLIKASI ---
-ctk.set_appearance_mode("Dark")
+ctk.set_appearance_mode("Light")
 ctk.set_default_color_theme("blue")
 
 APP_NAME = "Find Minutiae"
@@ -36,9 +36,35 @@ class App(ctk.CTk):
         super().__init__()
 
         # INISIALISASI FONT
-        self.FONT_UTAMA = ctk.CTkFont(family="Arial", size=14)
-        self.FONT_JUDUL = ctk.CTkFont(family="Arial", size=20, weight="bold")
-        self.FONT_SUBJUDUL = ctk.CTkFont(family="Arial", size=16, weight="bold")
+        self.FONT_UTAMA = ctk.CTkFont(family="assets/fonts/Inter/Inter_18pt-Regular.ttf", size=14)
+        self.FONT_BOLD = ctk.CTkFont(family="assets/fonts/Inter/Inter-VariableFont.opsz,wght.ttf", size=14, weight="normal")
+        self.FONT_JUDUL = ctk.CTkFont(family="assets/fonts/Inter/Inter-VariableFont.opsz,wght.ttf", size=20, weight="bold")
+        self.FONT_SUBJUDUL = ctk.CTkFont(family="assets/fonts/Inter/Inter_18pt-Bold.ttf", size=16)
+
+        self.BACKGROUND_COLOR = "#F6F7F9"
+        self.WHITE_TEXT_COLOR = "#FFFFFF"
+        self.CARD_COLOR = "#FFFFFF"
+        self.TEXT_COLOR = "#2A2B35"
+        self.SECONDARY_TEXT_COLOR_LIGHT = "#93959F"
+        self.SECONDARY_TEXT_COLOR = "#616269"
+        self.BORDER_COLOR = "#EBE8E8"
+        self.BUTTON_COLOR = "#397FFA"
+        self.BUTTON_HOVER_COLOR = "#1f6aa5"
+        self.HOVER_SIDEBAR_COLOR = "#E4E9F5"
+        self.ACTIVE_SIDEBAR_COLOR = "#D0DAF4"
+        self.SIDEBAR_COLOR = "#13143F"
+        self.BUTTON_HOVER_COLOR = "#9ABFFE"
+        self.ERROR_COLOR = "#FF4D4D"
+        self.SUCCESS_COLOR = "#28A745"
+        self.WARNING_COLOR = "#FFC107"
+        self.INFO_COLOR = "#17A2B8"
+        self.DANGER_COLOR = "#DC3545"
+        self.DANGER_HOVER_COLOR = "#C82333"
+        self.SUCCESS_COLOR = "#28A745"
+        self.SUCCESS_HOVER_COLOR = "#218838"
+        self.WARNING_COLOR = "#FFC107"
+        self.INFO_COLOR = "#17A2B8"
+
 
         # Inisialisasi Database
         init_db()

@@ -44,7 +44,7 @@ def cut_text(text, limit):
 # ===========================
 class RiwayatPencarianPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
-        super().__init__(parent, fg_color="gray17")
+        super().__init__(parent, fg_color=controller.BACKGROUND_COLOR)
         self.controller = controller
 
         # Pagination & state
@@ -102,12 +102,12 @@ class RiwayatPencarianPage(ctk.CTkFrame):
 
     # ---------- TABLE ----------
     def _setup_table_frame(self):
-        self.table_outer = ctk.CTkFrame(self, fg_color="gray15")
+        self.table_outer = ctk.CTkFrame(self, fg_color=self.controller.CARD_COLOR)
         self.table_outer.grid(row=1, column=0, sticky="nsew", padx=12, pady=(6, 6))
         self.table_outer.grid_columnconfigure(0, weight=1)
         self.table_outer.grid_rowconfigure(1, weight=1)
 
-        header = ctk.CTkFrame(self.table_outer, fg_color="gray20", height=36)
+        header = ctk.CTkFrame(self.table_outer, fg_color=self.controller.BACKGROUND_COLOR, height=36)
         header.grid(row=0, column=0, sticky="ew")
         header.grid_columnconfigure((0, 1, 2, 3, 4, 5), weight=1)
 
@@ -124,7 +124,7 @@ class RiwayatPencarianPage(ctk.CTkFrame):
             lbl.configure(width=w)
 
         self.scroll_area = ctk.CTkScrollableFrame(
-            self.table_outer, fg_color="gray15", label_text="", corner_radius=6, height=500
+            self.table_outer, fg_color=self.controller.CARD_COLOR, label_text="", corner_radius=6, height=500
         )
         self.scroll_area.grid(row=1, column=0, sticky="nsew", pady=(6, 6))
         self.scroll_area.grid_columnconfigure(0, weight=1)
@@ -139,13 +139,13 @@ class RiwayatPencarianPage(ctk.CTkFrame):
         pag_frame.grid(row=2, column=0, sticky="ew", padx=12, pady=(0, 12))
         pag_frame.grid_columnconfigure(1, weight=1)
 
-        self.btn_prev = ctk.CTkButton(pag_frame, text="◀ Sebelumnya", width=90, command=self.prev_page)
+        self.btn_prev = ctk.CTkButton(pag_frame, text="◀ Sebelumnya", width=90, command=self.prev_page, fg_color=self.controller.BUTTON_COLOR, hover_color=self.controller.BUTTON_HOVER_COLOR)
         self.btn_prev.grid(row=0, column=0, padx=(0, 8))
 
         self.page_label = ctk.CTkLabel(pag_frame, text=f"Halaman {self.page}", font=self.controller.FONT_UTAMA)
         self.page_label.grid(row=0, column=1)
 
-        self.btn_next = ctk.CTkButton(pag_frame, text="Selanjutnya ▶", width=90, command=self.next_page)
+        self.btn_next = ctk.CTkButton(pag_frame, text="Selanjutnya ▶", width=90, command=self.next_page, fg_color=self.controller.BUTTON_COLOR, hover_color=self.controller.BUTTON_HOVER_COLOR)
         self.btn_next.grid(row=0, column=2, padx=(8, 0))
 
     def prev_page(self):
@@ -201,16 +201,16 @@ class RiwayatPencarianPage(ctk.CTkFrame):
                 username = row[6] if len(row) > 5 else ""
                 
 
-            bg_color = "gray18" if (i % 2 == 0) else "gray17"
+            bg_color = self.controller.CARD_COLOR if (i % 2 == 0) else self.controller.BACKGROUND_COLOR
             row_frame = ctk.CTkFrame(self.rows_container, fg_color=bg_color, height=42, corner_radius=4)
             row_frame.grid(row=i, column=0, sticky="ew", padx=(4, 4), pady=(2, 2))
             row_frame.grid_columnconfigure((0, 1, 2, 3, 4, 5), weight=1)
 
-            underline = ctk.CTkFrame(row_frame, fg_color="gray12", height=1)
+            underline = ctk.CTkFrame(row_frame, fg_color=self.controller.TEXT_COLOR, height=1)
             underline.grid(row=1, column=0, columnspan=6, sticky="ew", pady=(0, 0))
 
             def on_enter(e, f=row_frame):
-                f.configure(fg_color="gray25")
+                f.configure(fg_color=self.controller.HOVER_SIDEBAR_COLOR)
 
             def on_leave(e, f=row_frame, orig=bg_color):
                 f.configure(fg_color=orig)
@@ -259,8 +259,8 @@ class RiwayatPencarianPage(ctk.CTkFrame):
                 width=36,
                 height=28,
                 image=icons.get("detail"),
-                fg_color="#1f6aa5",
-                hover_color="#18537a",
+                fg_color=self.controller.BUTTON_COLOR,
+                hover_color=self.controller.BUTTON_HOVER_COLOR,
                 command=lambda rid=row_id: self.show_detail(rid)
             )
             btn_detail.pack(side="right")
@@ -276,7 +276,7 @@ class RiwayatPencarianPage(ctk.CTkFrame):
 # ===========================
 class DetailPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
-        super().__init__(parent, fg_color="gray17")
+        super().__init__(parent, fg_color=controller.BACKGROUND_COLOR)
         self.controller = controller
         self.record_id = None
         self.record_paths = {}
@@ -314,7 +314,9 @@ class DetailPage(ctk.CTkFrame):
             text="Edit Data",
             image=icons.get("edit"),
             command=self.go_to_edit,
-            width=80
+            width=80,
+            fg_color=self.controller.BUTTON_COLOR,
+            hover_color=self.controller.BUTTON_HOVER_COLOR
         )
         self.btn_edit.pack(side="left", padx=5)
 
@@ -323,8 +325,8 @@ class DetailPage(ctk.CTkFrame):
             text="Hapus",
             image=icons.get("hapus"),
             command=self.delete_record,
-            fg_color="#cc3300",
-            hover_color="#992600",
+            fg_color=self.controller.DANGER_COLOR,
+            hover_color=self.controller.DANGER_HOVER_COLOR,
             width=80
         )
         self.btn_delete.pack(side="left", padx=5)
@@ -334,11 +336,13 @@ class DetailPage(ctk.CTkFrame):
             image=icons.get("kembali"),
             text="Kembali",
             command=lambda: self.controller.show_frame("RiwayatPencarian"),
-            width=80
+            width=80,
+            fg_color=self.controller.BUTTON_COLOR,
+            hover_color=self.controller.BUTTON_HOVER_COLOR
         )
         self.btn_back.pack(side="left", padx=5)
 
-        self.content_frame = ctk.CTkFrame(self, fg_color="gray15")
+        self.content_frame = ctk.CTkFrame(self, fg_color=self.controller.CARD_COLOR)
         self.content_frame.grid(row=1, column=0, padx=20, pady=10, sticky="nsew")
         self.content_frame.grid_columnconfigure((0, 1), weight=1)
 
@@ -450,7 +454,7 @@ class DetailPage(ctk.CTkFrame):
         )
         self.radio_ekstraksi.pack(side="left", padx=10)
 
-        self.image_holder = ctk.CTkLabel(image_panel, text="[Gambar]", corner_radius=10, fg_color="gray25")
+        self.image_holder = ctk.CTkLabel(image_panel, text="[Gambar]", corner_radius=10, fg_color=self.controller.BACKGROUND_COLOR)
         self.image_holder.grid(row=2, column=0, sticky="nsew")
 
         self.btn_perbesar = ctk.CTkButton(
@@ -458,7 +462,9 @@ class DetailPage(ctk.CTkFrame):
             text="Perbesar",
             image=icons.get("perbesar"),
             font=self.controller.FONT_UTAMA,
-            command=self.show_fullscreen_comparison
+            command=self.show_fullscreen_comparison,
+            fg_color=self.controller.BUTTON_COLOR,
+            hover_color=self.controller.BUTTON_HOVER_COLOR
         )
         self.btn_perbesar.grid(row=3, column=0, pady=(10, 0), sticky="e")
 
@@ -609,7 +615,7 @@ class DetailPage(ctk.CTkFrame):
             text="",
             variable=self._fs_left_toggle_var,
             command=self._on_fs_toggle,
-            fg_color="#1f6aa5",
+            fg_color=self.controller.BUTTON_COLOR,
             border_color="white",
             checkbox_width=16,
             checkbox_height=16
@@ -644,7 +650,7 @@ class DetailPage(ctk.CTkFrame):
             text="",
             variable=self._fs_right_toggle_var,
             command=self._on_fs_toggle,
-            fg_color="#1f6aa5",
+            fg_color=self.controller.BUTTON_COLOR,
             border_color="white",
             checkbox_width=16,
             checkbox_height=16
@@ -821,7 +827,7 @@ class DetailPage(ctk.CTkFrame):
 # ===========================
 class EditPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
-        super().__init__(parent, fg_color="gray17")
+        super().__init__(parent, fg_color=controller.BACKGROUND_COLOR)
         self.controller = controller
         self.record_id = None
 
@@ -832,7 +838,7 @@ class EditPage(ctk.CTkFrame):
             row=0, column=0, padx=20, pady=(20, 10), sticky="w"
         )
 
-        self.edit_card = ctk.CTkFrame(self, fg_color="gray15", corner_radius=10)
+        self.edit_card = ctk.CTkFrame(self, fg_color=controller.CARD_COLOR, corner_radius=10)
         self.edit_card.grid(row=1, column=0, padx=20, pady=10, sticky="nwe")
         self.edit_card.grid_columnconfigure(0, weight=1)
 
@@ -873,8 +879,8 @@ class EditPage(ctk.CTkFrame):
             text="Simpan Perubahan",
             command=self.save_changes,
             height=40,
-            fg_color="#1f6aa5",
-            hover_color="#18537a"
+            fg_color=self.controller.BUTTON_COLOR,
+            hover_color=self.controller.BUTTON_HOVER_COLOR
         )
         btn_simpan.pack(side="left", padx=10)
 
@@ -883,8 +889,8 @@ class EditPage(ctk.CTkFrame):
             text="Batal",
             command=lambda: self.controller.show_frame("DetailPage", data={'id': self.record_id}),
             height=40,
-            fg_color="gray40",
-            hover_color="gray25"
+            fg_color=self.controller.DANGER_COLOR,
+            hover_color=self.controller.DANGER_HOVER_COLOR
         )
         btn_batal.pack(side="left")
 

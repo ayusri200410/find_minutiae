@@ -39,7 +39,7 @@ def cut_text(text, limit):
 # --------------------------------------------------------
 class UserManagementPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
-        super().__init__(parent, fg_color="gray17")
+        super().__init__(parent, fg_color=controller.BACKGROUND_COLOR)
         self.controller = controller
 
         # Pagination & state
@@ -92,19 +92,19 @@ class UserManagementPage(ctk.CTkFrame):
             text="Tambah User",
             width=120,
             image = icons.get("tambah"),
-            fg_color="#1f6aa5",
-            hover_color="#18537a",
+            fg_color=self.controller.SUCCESS_COLOR,
+            hover_color=self.controller.SUCCESS_HOVER_COLOR,
             command=lambda: self.controller.show_frame("TambahUser")
         )
         btn_tambah.grid(row=0, column=1, rowspan=2, padx=(8, 0), sticky="e")
 
     def _setup_table_frame(self):
-        self.table_outer = ctk.CTkFrame(self, fg_color="gray15")
+        self.table_outer = ctk.CTkFrame(self, fg_color=self.controller.CARD_COLOR)
         self.table_outer.grid(row=1, column=0, sticky="nsew", padx=12, pady=(6,6))
         self.table_outer.grid_columnconfigure(0, weight=1)
         self.table_outer.grid_rowconfigure(1, weight=1)
 
-        header = ctk.CTkFrame(self.table_outer, fg_color="gray20", height=36)
+        header = ctk.CTkFrame(self.table_outer, fg_color=self.controller.BACKGROUND_COLOR, height=36)
         header.grid(row=0, column=0, sticky="ew")
         header.grid_columnconfigure((0,1,2,3,4), weight=1)
 
@@ -125,7 +125,7 @@ class UserManagementPage(ctk.CTkFrame):
             lbl.configure(width=w)
 
         # Scrollable area for rows
-        self.scroll_area = ctk.CTkScrollableFrame(self.table_outer, fg_color="gray15", height=500)
+        self.scroll_area = ctk.CTkScrollableFrame(self.table_outer, fg_color=self.controller.CARD_COLOR, height=500)
         self.scroll_area.grid(row=1, column=0, sticky="nsew", pady=(6,6))
         self.scroll_area.grid_columnconfigure(0, weight=1)
 
@@ -138,13 +138,13 @@ class UserManagementPage(ctk.CTkFrame):
         pag.grid(row=2, column=0, sticky="ew", padx=12, pady=(0,12))
         pag.grid_columnconfigure(1, weight=1)
 
-        self.btn_prev = ctk.CTkButton(pag, text="◀ Sebelumnya", width=90, command=self.prev_page)
+        self.btn_prev = ctk.CTkButton(pag, text="◀ Sebelumnya", width=90, command=self.prev_page, fg_color=self.controller.BUTTON_COLOR, hover_color=self.controller.BUTTON_HOVER_COLOR)
         self.btn_prev.grid(row=0, column=0, padx=(0,8))
 
         self.page_label = ctk.CTkLabel(pag, text=f"Halaman {self.page}", font=self.controller.FONT_UTAMA)
         self.page_label.grid(row=0, column=1)
 
-        self.btn_next = ctk.CTkButton(pag, text="Selanjutnya ▶", width=90, command=self.next_page)
+        self.btn_next = ctk.CTkButton(pag, text="Selanjutnya ▶", width=90, command=self.next_page, fg_color=self.controller.BUTTON_COLOR, hover_color=self.controller.BUTTON_HOVER_COLOR)
         self.btn_next.grid(row=0, column=2, padx=(8,0))
 
     def prev_page(self):
@@ -189,17 +189,17 @@ class UserManagementPage(ctk.CTkFrame):
         )
 
         for i, u in enumerate(page_data):
-            bg_color = "gray18" if (i % 2 == 0) else "gray17"
+            bg_color = self.controller.CARD_COLOR if (i % 2 == 0) else self.controller.BACKGROUND_COLOR
 
             row = ctk.CTkFrame(self.rows_container, fg_color=bg_color, height=42, corner_radius=4)
             row.grid(row=i, column=0, sticky="ew", padx=4, pady=2)
             row.grid_columnconfigure((0,1,2,3,4), weight=1)
 
-            underline = ctk.CTkFrame(row, fg_color="gray12", height=1)
+            underline = ctk.CTkFrame(row, fg_color=self.controller.TEXT_COLOR, height=1)
             underline.grid(row=1, column=0, columnspan=5, sticky="ew")
 
             def on_enter(e, f=row):
-                f.configure(fg_color="gray25")
+                f.configure(fg_color=self.controller.HOVER_SIDEBAR_COLOR)
             def on_leave(e, f=row, orig=bg_color):
                 f.configure(fg_color=orig)
 
@@ -238,7 +238,7 @@ class UserManagementPage(ctk.CTkFrame):
 
             btn = ctk.CTkButton(
                 action, text="Detail", width=36, height=28, image=icons.get("detail"),
-                fg_color="#1f6aa5", hover_color="#18537a",
+                fg_color=self.controller.BUTTON_COLOR, hover_color=self.controller.BUTTON_HOVER_COLOR,
                 command=lambda uid=u['id']: self.show_detail(uid)
             )
             btn.pack()
@@ -260,7 +260,7 @@ class UserManagementPage(ctk.CTkFrame):
 # --------------------------------------------------------
 class UserDetailPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
-        super().__init__(parent, fg_color="gray17")
+        super().__init__(parent, fg_color=controller.BACKGROUND_COLOR)
         self.controller = controller
         self.user_id = None
         self.user_data = None
@@ -282,19 +282,20 @@ class UserDetailPage(ctk.CTkFrame):
     
 
         ctk.CTkButton(buttons, text="Edit Data", width=90, image=icons.get("edit"),
-                       command=self.enter_edit, 
+                       command=self.enter_edit,fg_color=self.controller.BUTTON_COLOR, hover_color=self.controller.BUTTON_HOVER_COLOR 
                        ).pack(side="left", padx=6)
 
         ctk.CTkButton(buttons, text="Hapus", width=90, image=icons.get("hapus"),
                        command=self._delete,
-                       fg_color="#cc3300", hover_color="#992600").pack(side="left", padx=6)
+                       fg_color=self.controller.DANGER_COLOR, hover_color=self.controller.DANGER_HOVER_COLOR).pack(side="left", padx=6)
 
         ctk.CTkButton(buttons, text="Kembali", width=90,image=icons.get("kembali"),
-                       command=lambda: self.controller.show_frame("UserManagement")
+                       command=lambda: self.controller.show_frame("UserManagement"),
+                       fg_color=self.controller.BUTTON_COLOR, hover_color=self.controller.BUTTON_HOVER_COLOR
                        ).pack(side="left", padx=6)
 
         # Content
-        content = ctk.CTkFrame(self, fg_color="gray15")
+        content = ctk.CTkFrame(self, fg_color=self.controller.CARD_COLOR)
         content.grid(row=1, column=0, sticky="nsew", padx=20, pady=12)
         content.grid_columnconfigure((0,1), weight=1)
 
@@ -383,7 +384,7 @@ class UserDetailPage(ctk.CTkFrame):
 # --------------------------------------------------------
 class UserEditPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
-        super().__init__(parent, fg_color="gray17")
+        super().__init__(parent, fg_color=controller.BACKGROUND_COLOR)
         self.controller = controller
         self.record_id = None
 
@@ -395,7 +396,7 @@ class UserEditPage(ctk.CTkFrame):
                      font=controller.FONT_JUDUL).grid(row=0, column=0,
                                                       padx=20, pady=(20, 10), sticky="w")
 
-        self.edit_card = ctk.CTkFrame(self, fg_color="gray15", corner_radius=10)
+        self.edit_card = ctk.CTkFrame(self, fg_color=self.controller.CARD_COLOR, corner_radius=10)
         self.edit_card.grid(row=1, column=0, padx=20, pady=10, sticky="nwe")
         self.edit_card.grid_columnconfigure(0, weight=1)
 
@@ -458,7 +459,7 @@ class UserEditPage(ctk.CTkFrame):
                       command=self.save_changes).pack(side="left", padx=10)
 
         ctk.CTkButton(action_frame, text="Batal", height=40,
-                      fg_color="gray40", hover_color="gray25",
+                      fg_color=self.controller.DANGER_COLOR, hover_color=self.controller.DANGER_HOVER_COLOR,
                       command=lambda: self.controller.show_frame("UserDetail", data={"id": self.record_id})
                       ).pack(side="left")
 
@@ -519,7 +520,7 @@ class UserEditPage(ctk.CTkFrame):
 # --------------------------------------------------------
 class TambahUserPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
-        super().__init__(parent, fg_color="gray17")
+        super().__init__(parent, fg_color=controller.BACKGROUND_COLOR)
         self.controller = controller
 
         self.grid_columnconfigure(0, weight=1)
@@ -531,7 +532,7 @@ class TambahUserPage(ctk.CTkFrame):
             font=controller.FONT_JUDUL
         ).grid(row=0, column=0, padx=20, pady=(20,10), sticky="w")
 
-        self.card = ctk.CTkFrame(self, fg_color="gray15", corner_radius=10)
+        self.card = ctk.CTkFrame(self, fg_color=self.controller.CARD_COLOR, corner_radius=10)
         self.card.grid(row=1, column=0, padx=20, pady=10, sticky="nwe")
         self.card.grid_columnconfigure(0, weight=1)
 
@@ -587,8 +588,8 @@ class TambahUserPage(ctk.CTkFrame):
         btn_tambah = ctk.CTkButton(
             actions,
             text="Tambah",
-            fg_color="#1f6aa5",
-            hover_color="#18537a",
+            fg_color=self.controller.SUCCESS_COLOR,
+            hover_color=self.controller.SUCCESS_HOVER_COLOR,
             height=40,
             command=self._on_tambah
         )
@@ -597,8 +598,8 @@ class TambahUserPage(ctk.CTkFrame):
         btn_batal = ctk.CTkButton(
             actions,
             text="Kembali",
-            fg_color="gray40",
-            hover_color="gray25",
+            fg_color=self.controller.BUTTON_COLOR,
+            hover_color=self.controller.BUTTON_HOVER_COLOR,
             height=40,
             command=lambda: self.controller.show_frame("UserManagement")
         )
